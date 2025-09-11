@@ -1,0 +1,60 @@
+# Node.js dependencies
+**/node_modules/
+
+# Build output
+**/dist/
+**/build/
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Environment variables
+**/.env
+**/.env.local
+**/.env.*.local
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# TypeScript
+**/*.tsbuildinfo
+
+# Coverage reports
+**/coverage/
+
+# Optional: Docker artifacts
+**/.docker/
+**/*.log
+
+# Optional: Local database or uploads
+**/uploads/
+**/sqlite.db
+**/*.sqlite
+**/*.db
+
+# Optional: React/Vite cache
+**/.vite/
+**/.next/
+**/.turbo/
+
+# Optional: Backend runtime files
+**/tmp/
+**/out/
+**/.cache/
+
+# Optional: Test snapshots
+**/__snapshots__/
+
+# Optional: Misc
+*.local
+*.lock
