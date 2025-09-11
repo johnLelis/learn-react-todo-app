@@ -58,3 +58,6 @@ Thumbs.db
 # Optional: Misc
 *.local
 *.lock
+
+#rest client testing
+**/*.http
