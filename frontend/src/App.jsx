@@ -18,9 +18,7 @@ const App = () => {
   const fetchTodos = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/todos?sort=priority&order=asc`
-      );
+      const response = await axios.get(`${API_BASE_URL}/todos?sort=priority`);
       setAllTodos(response?.data?.data);
       setError(null);
       setActiveFilter('all');

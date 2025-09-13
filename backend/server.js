@@ -206,11 +206,21 @@ app.get('/api/todos', async (req, res) => {
     const validSorts = ['created_at', 'updated_at', 'text', 'priority'];
     const validOrders = ['asc', 'desc'];
 
-    if (
-      validSorts.includes(sort) &&
-      validOrders.includes(order.toLowerCase())
-    ) {
-      query += ` ORDER BY ${sort} ${order.toUpperCase()}`;
+    if (validSorts.includes(sort)) {
+      if (sort === 'priority') {
+        query += `
+      ORDER BY CASE priority
+        WHEN 'high' THEN 1
+        WHEN 'medium' THEN 2
+        WHEN 'low' THEN 3
+        ELSE 4
+      END ASC
+    `;
+      } else if (validOrders.includes(order.toLowerCase())) {
+        query += ` ORDER BY ${sort} ${order.toUpperCase()}`;
+      } else {
+        query += ` ORDER BY ${sort} DESC`;
+      }
     } else {
       query += ' ORDER BY created_at DESC';
     }
@@ -219,6 +229,7 @@ app.get('/api/todos', async (req, res) => {
     query += ' LIMIT ? OFFSET ?';
     params.push(parseInt(limit), parseInt(offset));
 
+    console.log(query);
     const todos = await db.all(query, params);
 
     // Get total count for pagination
