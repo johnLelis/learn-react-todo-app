@@ -2,140 +2,155 @@ import { useRef, useEffect, useState } from 'react';
 import FormGroup from './FormGroup';
 import FormRow from './FormRow';
 import PrioritySelect from './PrioritySelect';
-import { useFormStatus } from 'react-dom';
+import axios from 'axios';
+import { z } from 'zod';
+import ErrorToast from '../errors/ErrorToast';
 
 const AddTask = () => {
   const [todos, setTodos] = useState([]);
-  const triggerCalendar = () => {
-    document.getElementById('dueDate').showPicker?.() ||
-      document.getElementById('dueDate').focus();
-  };
-
-  const [inputValues, setInputValues] = useState({
-    title: '',
-    category: '',
-    date: '',
-    description: '',
-    priority: 'medium',
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(null);
+  const [zodErrors, setZodErrors] = useState(null);
+  const TaskSchema = z.object({
+    title: z.string().min(3, 'Title must be at least 3 characters').max(100),
+    priority: z.enum(['low', 'medium', 'high']),
+    category: z
+      .string()
+      .min(3, 'Category must be at least 3 characters')
+      .max(50)
+      .optional(),
+    description: z.string().max(500).optional(),
+    dueDate: z.string().optional(),
   });
 
-  const handleOnSubmit = async data => {
-    const title = data.get('title');
-    const priority = data.get('priority');
-    console.log(`Prio: ${priority}`);
-    const saveTodo = await simulateApiCall(title);
-    setTodos(prevState => [...prevState, saveTodo]);
+  const API_BASE_URL = 'http://localhost:3001/api';
+
+  const fetchTodos = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/todos`);
+      setTodos(response?.data?.data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching todos:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handeOnClear = () => {
-    setInputValues({
-      title: '',
-      category: '',
-      date: '',
-      description: '',
-      priority: 'medium',
-    });
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const addTodos = async data => {
+    setIsLoading(true);
+    try {
+      await axios.post(`${API_BASE_URL}/todos`, data);
+      await fetchTodos();
+      setError(null);
+      handeOnClear();
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching todos:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleOnChange = e => {
-    const { name, value } = e.target;
-    setInputValues(prevValues => ({
-      ...prevValues,
-      [name]: value,
-    }));
+  const handleOnSubmit = async e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const parsedData = {};
+    for (let [key, value] of formData.entries()) {
+      if (key && value) {
+        parsedData[key] = value;
+      }
+    }
+
+    console.log(JSON.stringify(parsedData, null, 2));
+
+    const result = TaskSchema.safeParse(parsedData);
+
+    if (result.success) {
+      await addTodos(parsedData);
+      setZodErrors(null);
+    } else {
+      const tree = z.treeifyError(result.error);
+      setZodErrors(tree.properties);
+    }
   };
 
   const titleRef = useRef(null);
+  const formRef = useRef(null);
   useEffect(() => {
     titleRef.current.focus();
   }, []);
 
+  const handeOnClear = () => {
+    formRef.current.reset();
+    setZodErrors(null);
+  };
+
   return (
     <section className="add-task-section">
       <h2 className="section-title">Create New Task</h2>
-      <form className="add-task-form" action={handleOnSubmit}>
+      <form ref={formRef} className="add-task-form" onSubmit={handleOnSubmit}>
         <FormRow>
           <FormGroup
             label="Task Title *"
             name="title"
             placeholder="What needs to be done?"
-            minLength="3"
-            maxLength="100"
             ref={titleRef}
-            value={inputValues.title}
-            onChange={handleOnChange}
+            errors={zodErrors?.title?.errors[0]}
           />
-          <PrioritySelect
-            value={inputValues.priority}
-            onChange={handleOnChange}
-          />
+
+          <PrioritySelect errors={zodErrors?.priority?.errors[0]} />
 
           <FormGroup
             label="Category"
             name="category"
             placeholder="e.g., Work, Personal, Learning"
-            minLength="3"
-            maxLength="50"
-            value={inputValues.category}
-            onChange={handleOnChange}
+            errors={zodErrors?.category?.errors[0]}
           />
-          <FormGroup
-            label="Due Date"
-            name="dueDate"
-            type="date"
-            onClick={triggerCalendar}
-            value={inputValues.date}
-            onChange={handleOnChange}
-          />
+          <FormGroup label="Due Date" name="dueDate" type="date" />
           <FormGroup
             label="Description"
             name="description"
             placeholder="Add more details about this task (optional)..."
-            maxLength="500"
-            additionalClass={['']}
-            value={inputValues.description}
-            onChange={handleOnChange}
+            additionalClass={'full-width'}
+            as="textarea"
+            errors={zodErrors?.description?.errors[0]}
           />
-
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={handeOnClear}
-            >
-              🗑️ Clear Form
-            </button>
-            <SubmitButton />
-          </div>
         </FormRow>
+
+        <div className="form-actions">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handeOnClear}
+          >
+            🗑️ Clear Form
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="btn btn-primary"
+          >
+            {isLoading ? <span className="spinner" /> : '✨ Add Task'}
+          </button>
+        </div>
       </form>
-      <ul>
-        {todos.length > 0 &&
-          todos.map((todo, idx) => <li key={idx}>{todo}</li>)}
-      </ul>
-      <div className="form-error" id="formError">
-        Please check your input and try again.
-      </div>
+      {isLoading ? (
+        <span className="spinner" />
+      ) : (
+        todos.length > 0 && <pre>{JSON.stringify(todos, null, 2)}</pre>
+      )}
+
+      {error && <ErrorToast message={error} onClose={() => setError(null)} />}
     </section>
   );
 };
-
-function SubmitButton() {
-  const data = useFormStatus();
-  const isLoading = data.pending;
-  return (
-    <button disabled={isLoading} className="btn btn-primary">
-      {isLoading ? <span className="spinner" /> : '✨ Add Task'}
-    </button>
-  );
-}
-
-async function simulateApiCall(todo) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(todo);
-    }, 1000);
-  });
-}
 
 export default AddTask;

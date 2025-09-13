@@ -1,6 +1,4 @@
-import React from 'react';
-
-const PrioritySelect = ({ value, onChange }) => {
+const PrioritySelect = () => {
   return (
     <div className="form-group priority-select">
       <label htmlFor="priority" className="form-label">
@@ -9,9 +7,8 @@ const PrioritySelect = ({ value, onChange }) => {
       <select
         id="priority"
         name="priority"
-        value={value}
         className="form-select"
-        onChange={onChange}
+        defaultValue="medium"
       >
         <option value="low">🟢 Low Priority</option>
         <option value="medium">🟡 Medium Priority</option>

@@ -1,23 +1,30 @@
-import React from 'react';
-
 const FormGroup = ({
   label,
   name,
   type = 'text',
-  additionalClass,
+  as = 'input',
+  additionalClass = '',
+  errors,
   ...props
 }) => (
-  <div className="form-group">
+  <div className={`form-group ${additionalClass}`}>
     <label htmlFor={name} className="form-label">
       {label}
     </label>
-    <input
-      id={name}
-      name={name}
-      type={type}
-      className={`form-input ${{ ...additionalClass }}`}
-      {...props}
-    />
+
+    {as === 'textarea' ? (
+      <textarea id={name} name={name} className="form-textarea" {...props} />
+    ) : (
+      <input
+        id={name}
+        name={name}
+        type={type}
+        className="form-input"
+        {...props}
+      />
+    )}
+
+    {errors && <p className="error">{errors}</p>}
   </div>
 );
 
