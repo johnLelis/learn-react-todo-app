@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 import { isToday } from '../../utils/dateUtils';
-const ButtonFilter = () => {
+const FilteredTodos = () => {
   const { allTodos, setFilteredTodos, activeFilter, setActiveFilter } =
     useContext(GlobalTodosContext);
   const filters = [
@@ -64,4 +64,4 @@ const ButtonFilter = () => {
   );
 };
 
-export default ButtonFilter;
+export default FilteredTodos;

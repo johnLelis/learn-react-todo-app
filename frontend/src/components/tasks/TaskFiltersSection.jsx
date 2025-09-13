@@ -1,10 +1,10 @@
-import FilterTodos from '../taskfilters/FilterTodos';
+import FilteredTodos from '../taskfilters/FilteredTodos';
 
 const TaskFiltersSection = () => {
   return (
     <>
       <div className="task-filters">
-        <FilterTodos />
+        <FilteredTodos />
       </div>
     </>
   );
