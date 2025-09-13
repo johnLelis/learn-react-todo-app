@@ -4,10 +4,13 @@ import axios from 'axios';
 import { GlobalTodosContext } from './context/GlobalTodosContext';
 import AddTaskSection from './components/tasks/AddTaskSection';
 import TaskFilters from './components/tasks/TaskFiltersSection';
+import EmptyTask from './components/tasks/EmptyTask';
 
-function App() {
+const App = () => {
   const API_BASE_URL = 'http://localhost:3001/api';
-  const [todos, setTodos] = useState([]);
+  const [allTodos, setAllTodos] = useState([]);
+  const [filteredTodos, setFilteredTodos] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(null);
   const [error, setError] = useState(null);
 
@@ -15,8 +18,9 @@ function App() {
     setIsLoading(true);
     try {
       const response = await axios.get(`${API_BASE_URL}/todos`);
-      setTodos(response?.data?.data);
+      setAllTodos(response?.data?.data);
       setError(null);
+      setActiveFilter('all');
     } catch (err) {
       setError(err.message);
       console.error('Error fetching todos:', err);
@@ -28,6 +32,7 @@ function App() {
   useEffect(() => {
     fetchTodos();
   }, []);
+
   return (
     <>
       <div className="app-container">
@@ -39,20 +44,38 @@ function App() {
       <main className="main-content">
         <GlobalTodosContext.Provider
           value={{
-            todos,
+            allTodos,
             isLoading,
             setIsLoading,
             error,
             setError,
             fetchTodos,
+            setActiveFilter,
+            activeFilter,
+            setFilteredTodos,
           }}
         >
           <AddTaskSection />
           <TaskFilters />
         </GlobalTodosContext.Provider>
+
+        {isLoading ? (
+          <span className="spinner" />
+        ) : activeFilter === 'all' && allTodos.length > 0 ? (
+          <pre>{JSON.stringify(allTodos, null, 2)}</pre>
+        ) : (
+          filteredTodos &&
+          filteredTodos.length > 0 && (
+            <pre>{JSON.stringify(filteredTodos, null, 2)}</pre>
+          )
+        )}
+
+        {allTodos.length === 0 &&
+          filteredTodos &&
+          filteredTodos.length === 0 && <EmptyTask />}
       </main>
     </>
   );
-}
+};
 
 export default App;

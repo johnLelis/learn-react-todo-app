@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 
 const AddTaskSection = () => {
-  const { todos, isLoading, setIsLoading, setError, fetchTodos, error } =
+  const { isLoading, setIsLoading, setError, fetchTodos, error } =
     useContext(GlobalTodosContext);
   const [zodErrors, setZodErrors] = useState(null);
   const TaskSchema = z.object({
@@ -51,8 +51,6 @@ const AddTaskSection = () => {
         parsedData[key] = value;
       }
     }
-
-    console.log(JSON.stringify(parsedData, null, 2));
 
     const result = TaskSchema.safeParse(parsedData);
 
@@ -125,11 +123,6 @@ const AddTaskSection = () => {
           </button>
         </div>
       </form>
-      {isLoading ? (
-        <span className="spinner" />
-      ) : (
-        todos.length > 0 && <pre>{JSON.stringify(todos, null, 2)}</pre>
-      )}
 
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
     </section>

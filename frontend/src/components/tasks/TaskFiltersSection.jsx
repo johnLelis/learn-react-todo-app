@@ -1,12 +1,13 @@
-import React from 'react';
 import ButtonFilter from '../taskfilters/ButtonFilter';
 
-const TaskFilters = () => {
+const TaskFiltersSection = () => {
   return (
-    <div className="task-filters">
-      <ButtonFilter />
-    </div>
+    <>
+      <div className="task-filters">
+        <ButtonFilter />
+      </div>
+    </>
   );
 };
 
-export default TaskFilters;
+export default TaskFiltersSection;
