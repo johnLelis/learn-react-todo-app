@@ -1,15 +1,16 @@
 import { useRef, useEffect, useState } from 'react';
-import FormGroup from './FormGroup';
-import FormRow from './FormRow';
-import PrioritySelect from './PrioritySelect';
+import FormGroup from '../form/FormGroup';
+import FormRow from '../form/FormRow';
+import PrioritySelect from '../form/PrioritySelect';
 import axios from 'axios';
 import { z } from 'zod';
 import ErrorToast from '../errors/ErrorToast';
+import { useContext } from 'react';
+import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 
-const AddTask = () => {
-  const [todos, setTodos] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+const AddTaskSection = () => {
+  const { todos, isLoading, setIsLoading, setError, fetchTodos, error } =
+    useContext(GlobalTodosContext);
   const [zodErrors, setZodErrors] = useState(null);
   const TaskSchema = z.object({
     title: z.string().min(3, 'Title must be at least 3 characters').max(100),
@@ -24,24 +25,6 @@ const AddTask = () => {
   });
 
   const API_BASE_URL = 'http://localhost:3001/api';
-
-  const fetchTodos = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${API_BASE_URL}/todos`);
-      setTodos(response?.data?.data);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching todos:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTodos();
-  }, []);
 
   const addTodos = async data => {
     setIsLoading(true);
@@ -153,4 +136,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default AddTaskSection;
