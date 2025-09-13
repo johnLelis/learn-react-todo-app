@@ -300,6 +300,7 @@ body {
   list-style: none;
   display: grid;
   gap: 20px;
+  padding: 25px;
 }
 
 .task-item {
@@ -416,7 +417,7 @@ body {
 .task-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #ffffff;
   margin-bottom: 8px;
   line-height: 1.4;
 }

@@ -5,6 +5,7 @@ import { GlobalTodosContext } from './context/GlobalTodosContext';
 import AddTaskSection from './components/tasks/AddTaskSection';
 import TaskFilters from './components/tasks/TaskFiltersSection';
 import EmptyTask from './components/tasks/EmptyTask';
+import TaskList from './components/tasks/TaskList';
 
 const App = () => {
   const API_BASE_URL = 'http://localhost:3001/api';
@@ -17,7 +18,9 @@ const App = () => {
   const fetchTodos = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/todos`);
+      const response = await axios.get(
+        `${API_BASE_URL}/todos?sort=priority&order=asc`
+      );
       setAllTodos(response?.data?.data);
       setError(null);
       setActiveFilter('all');
@@ -39,41 +42,28 @@ const App = () => {
         <header className="app-header">
           <h1 className="app-title">Task Manager</h1>
         </header>
+
+        <main className="main-content">
+          <GlobalTodosContext.Provider
+            value={{
+              allTodos,
+              isLoading,
+              setIsLoading,
+              error,
+              setError,
+              fetchTodos,
+              setActiveFilter,
+              activeFilter,
+              setFilteredTodos,
+              filteredTodos,
+            }}
+          >
+            <AddTaskSection />
+            <TaskFilters />
+            <TaskList />
+          </GlobalTodosContext.Provider>
+        </main>
       </div>
-
-      <main className="main-content">
-        <GlobalTodosContext.Provider
-          value={{
-            allTodos,
-            isLoading,
-            setIsLoading,
-            error,
-            setError,
-            fetchTodos,
-            setActiveFilter,
-            activeFilter,
-            setFilteredTodos,
-          }}
-        >
-          <AddTaskSection />
-          <TaskFilters />
-        </GlobalTodosContext.Provider>
-
-        {isLoading ? (
-          <span className="spinner" />
-        ) : activeFilter === 'all' && allTodos.length > 0 ? (
-          <pre>{JSON.stringify(allTodos, null, 2)}</pre>
-        ) : (
-          filteredTodos &&
-          filteredTodos.length > 0 && (
-            <pre>{JSON.stringify(filteredTodos, null, 2)}</pre>
-          )
-        )}
-
-        {allTodos.length === 0 &&
-          filteredTodos &&
-          filteredTodos.length === 0 && <EmptyTask />}
-      </main>
     </>
   );
 };

@@ -29,7 +29,7 @@ const ButtonFilter = () => {
 
   const getFilteredTodos = filterKey => {
     const filterMap = {
-      active: () => allTodos?.filter(todo => todo.completed !== 1),
+      active: () => allTodos?.filter(todo => !todo.completed),
       completed: () => allTodos?.filter(todo => todo.completed),
       high: () => allTodos?.filter(todo => todo.priority === 'high'),
       today: () =>
