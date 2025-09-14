@@ -10,7 +10,7 @@ const SuccessToast = ({ message, visible, onClose }) => {
         setTimeout(() => {
           onClose();
         }, 300);
-      }, 4000);
+      }, 2000);
 
       return () => clearTimeout(hideTimer);
     }
