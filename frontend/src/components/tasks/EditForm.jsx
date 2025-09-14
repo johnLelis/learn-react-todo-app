@@ -117,7 +117,13 @@ const EditForm = ({ currentIdToEdit, allTodos, setShowEditForm }) => {
         ></textarea>
       </div>
       <div className="edit-actions">
-        <button type="button" className="task-btn cancel-btn">
+        <button
+          type="button"
+          onClick={() => {
+            setShowEditForm(false);
+          }}
+          className="task-btn cancel-btn"
+        >
           ❌ Cancel
         </button>
         <button type="submit" className="task-btn save-btn">
