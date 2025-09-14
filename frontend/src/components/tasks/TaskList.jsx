@@ -31,6 +31,18 @@ const TaskList = () => {
     }
   };
 
+  const handleOnDelete = async id => {
+    try {
+      await axios.delete(`${baseUrl}/todos/${id}`);
+      setAllTodos(prev => {
+        return prev.filter(todo => todo.id !== id);
+      });
+    } catch (err) {
+      setError(err.message);
+      console.error('Error deleting todo:', err);
+    }
+  };
+
   const displayData = todos => {
     return todos.map(
       ({
@@ -86,7 +98,12 @@ const TaskList = () => {
                 </div>
                 <div className="task-actions">
                   <button className="task-btn edit-btn">✏️ Edit</button>
-                  <button className="task-btn delete-btn">🗑️ Delete</button>
+                  <button
+                    className="task-btn delete-btn"
+                    onClick={() => handleOnDelete(id)}
+                  >
+                    🗑️ Delete
+                  </button>
                 </div>
               </div>
             </div>
