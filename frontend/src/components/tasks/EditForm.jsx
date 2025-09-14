@@ -1,4 +1,4 @@
-import { useRef, useEffect, useContext, useState } from 'react';
+import { useRef, useEffect, useContext, useState, useCallback } from 'react';
 import z from 'zod';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
@@ -78,9 +78,25 @@ const EditForm = ({ currentIdToEdit, allTodos, setShowEditForm }) => {
       setZodErrors(tree.properties);
     }
   };
+  const formRef = useRef(null);
+  const handleOnCancel = useCallback(() => {
+    setShowEditForm(false);
+  }, [setShowEditForm]);
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        handleOnCancel();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleOnCancel]);
 
   return (
-    <form onSubmit={handleOnSubmit} className="edit-form">
+    <form ref={formRef} onSubmit={handleOnSubmit} className="edit-form">
       <div className="edit-row">
         <div className="edit-title">
           <div className="title-input">
@@ -119,9 +135,7 @@ const EditForm = ({ currentIdToEdit, allTodos, setShowEditForm }) => {
       <div className="edit-actions">
         <button
           type="button"
-          onClick={() => {
-            setShowEditForm(false);
-          }}
+          onClick={handleOnCancel}
           className="task-btn cancel-btn"
         >
           ❌ Cancel
