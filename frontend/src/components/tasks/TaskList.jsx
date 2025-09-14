@@ -6,14 +6,8 @@ import EmptyTask from './EmptyTask';
 import axios from 'axios';
 
 const TaskList = () => {
-  const {
-    activeFilter,
-    allTodos,
-    filteredTodos,
-    setError,
-    setAllTodos,
-    setFilteredTodos,
-  } = useContext(GlobalTodosContext);
+  const { activeFilter, allTodos, filteredTodos, setError, setAllTodos } =
+    useContext(GlobalTodosContext);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const priorityCircle = {
@@ -27,16 +21,10 @@ const TaskList = () => {
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
 
-  console.log(activeFilter);
-
   const handleOnCompleted = async id => {
     try {
       await axios.patch(`${baseUrl}/todos/${id}/toggle`);
-      if (activeFilter === 'all') {
-        setAllTodos(prev => mapTodos(prev, id));
-      } else {
-        setFilteredTodos(prev => mapTodos(prev, id));
-      }
+      setAllTodos(prev => mapTodos(prev, id));
     } catch (err) {
       setError(err.message);
       console.error('Error updating todos:', err);

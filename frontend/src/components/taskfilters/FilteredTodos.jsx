@@ -1,9 +1,8 @@
 import { useContext } from 'react';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
-import { isToday } from '../../utils/dateUtils';
+
 const FilteredTodos = () => {
-  const { allTodos, setFilteredTodos, activeFilter, setActiveFilter } =
-    useContext(GlobalTodosContext);
+  const { activeFilter, setActiveFilter } = useContext(GlobalTodosContext);
   const filters = [
     {
       dataFilter: 'all',
@@ -27,23 +26,8 @@ const FilteredTodos = () => {
     },
   ];
 
-  const getFilteredTodos = filterKey => {
-    const filterMap = {
-      active: () => allTodos?.filter(todo => !todo.completed),
-      completed: () => allTodos?.filter(todo => todo.completed),
-      high: () => allTodos?.filter(todo => todo.priority === 'high'),
-      today: () =>
-        allTodos?.filter(({ due_date }) => {
-          return due_date && isToday(due_date);
-        }),
-    };
-
-    setFilteredTodos(filterMap[filterKey]);
-  };
-
   const handleOnClick = filterKey => {
     setActiveFilter(filterKey);
-    getFilteredTodos(filterKey);
   };
 
   return (

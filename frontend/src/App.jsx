@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import './App.css';
 import axios from 'axios';
 import { GlobalTodosContext } from './context/GlobalTodosContext';
 import AddTaskSection from './components/tasks/AddTaskSection';
 import TaskFilters from './components/tasks/TaskFiltersSection';
 import TaskList from './components/tasks/TaskList';
-
+import { isToday } from './utils/dateUtils';
 const App = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [allTodos, setAllTodos] = useState([]);
-  const [filteredTodos, setFilteredTodos] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(null);
   const [error, setError] = useState(null);
@@ -33,6 +32,22 @@ const App = () => {
     fetchTodos();
   }, [fetchTodos]);
 
+  const filteredTodos = useMemo(() => {
+    if (activeFilter === 'all') return allTodos;
+
+    const filterMap = {
+      active: () => allTodos?.filter(todo => !todo.completed),
+      completed: () => allTodos?.filter(todo => todo.completed),
+      high: () => allTodos?.filter(todo => todo.priority === 'high'),
+      today: () =>
+        allTodos?.filter(({ due_date }) => {
+          return due_date && isToday(due_date);
+        }),
+    };
+
+    return filterMap[activeFilter] ? filterMap[activeFilter]() : allTodos;
+  }, [allTodos, activeFilter]);
+
   return (
     <>
       <div className="app-container">
@@ -51,7 +66,6 @@ const App = () => {
               fetchTodos,
               setActiveFilter,
               activeFilter,
-              setFilteredTodos,
               filteredTodos,
               setAllTodos,
             }}
