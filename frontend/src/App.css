@@ -525,9 +525,18 @@ body {
 }
 
 .edit-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
+}
+
+.edit-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.title-input {
+  flex: 1;
 }
 
 .edit-input,
@@ -860,4 +869,8 @@ body {
 
 .close-button:hover {
   color: #fdd;
+}
+
+.hidden {
+  display: none;
 }

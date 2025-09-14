@@ -1,4 +1,3 @@
-import React from 'react';
 import EditTaskButton from './EditTaskButton';
 import DeleteTaskButton from './DeleteTaskButton';
 

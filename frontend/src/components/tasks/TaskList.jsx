@@ -1,14 +1,18 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 import EmptyTask from './EmptyTask';
 import { TaskContext } from '../../context/TaskContext';
 import TaskCheckbox from './TaskCheckbox';
 import TaskMain from './TaskMain';
 import TaskActions from './TaskActions';
+import EditForm from './EditForm';
 
 const TaskList = () => {
   const { activeFilter, allTodos, filteredTodos } =
     useContext(GlobalTodosContext);
+
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [currentIdToEdit, setCurrentIdToEdit] = useState(null);
 
   const displayData = todos => {
     return todos.map(
@@ -30,7 +34,11 @@ const TaskList = () => {
             }`}
           >
             <div className="task-content">
-              <div className="task-header">
+              <div
+                className={`task-header ${
+                  showEditForm && currentIdToEdit === id && 'hidden'
+                }`}
+              >
                 <TaskContext.Provider
                   value={{
                     id,
@@ -41,13 +49,21 @@ const TaskList = () => {
                     priority,
                     category,
                     dueDate,
+                    setShowEditForm,
+                    setCurrentIdToEdit,
                   }}
                 >
                   <TaskCheckbox />
                   <TaskMain />
                   <TaskActions />
                 </TaskContext.Provider>
-              </div>
+              </div>{' '}
+              {showEditForm && currentIdToEdit === id && (
+                <EditForm
+                  currentIdToEdit={currentIdToEdit}
+                  allTodos={allTodos}
+                />
+              )}
             </div>
           </li>
         );

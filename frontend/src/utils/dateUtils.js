@@ -11,3 +11,7 @@ export function formatDate(date) {
 export function getDaysSince(date) {
   return dayjs().diff(dayjs(date), 'day');
 }
+
+export function formatDateForInput(date) {
+  return dayjs(date).format('YYYY-MM-DD');
+}

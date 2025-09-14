@@ -8,6 +8,7 @@ import TaskList from './components/tasks/TaskList';
 import { isToday } from './utils/dateUtils';
 import SuccessToast from './components/toasts/SuccessToast';
 import TaskStats from './components/tasks/TaskStats';
+import EditForm from './components/tasks/EditForm';
 const App = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [allTodos, setAllTodos] = useState([]);
