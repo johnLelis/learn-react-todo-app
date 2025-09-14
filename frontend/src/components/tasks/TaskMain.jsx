@@ -29,7 +29,7 @@ const TaskMain = () => {
         <span className={`priority-badge priority-${priority}`}>
           {`${priorityCircle[priority]} ${priority} Priority`}
         </span>
-        {completed && <span className="meta-item">✅ Completed</span>}
+        {completed === 1 && <span className="meta-item">✅ Completed</span>}
         {dueDate && <span className="meta-item">🗓️ {formatDate(dueDate)}</span>}
         <span className="meta-item">
           {`🕒 Created ${pastDays === 0 ? 'Today' : `${pastDays} days ago`}`}
