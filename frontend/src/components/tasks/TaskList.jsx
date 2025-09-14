@@ -62,6 +62,7 @@ const TaskList = () => {
                 <EditForm
                   currentIdToEdit={currentIdToEdit}
                   allTodos={allTodos}
+                  setShowEditForm={setShowEditForm}
                 />
               )}
             </div>

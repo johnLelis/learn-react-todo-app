@@ -525,17 +525,20 @@ body {
 }
 
 .edit-row {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(5 1fr);
+  grid-template-rows: repeat(4, auto);
   gap: 12px;
 }
 
 .edit-title {
   display: flex;
-  justify-content: space-between;
   gap: 10px;
 }
+
 .title-input {
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
 

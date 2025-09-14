@@ -24,14 +24,14 @@ const App = () => {
       const response = await axios.get(`${baseUrl}/todos?sort=priority`);
       setAllTodos(response?.data?.data);
       setError(null);
-      setActiveFilter('all');
+      setActiveFilter(activeFilter);
     } catch (err) {
       setError(err.message);
       console.error('Error fetching todos:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [baseUrl]);
+  }, [baseUrl, activeFilter]);
 
   useEffect(() => {
     fetchTodos();

@@ -3,13 +3,16 @@ import z from 'zod';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 import { formatDateForInput } from '../../utils/dateUtils';
+import axios from 'axios';
 
-const EditForm = ({ currentIdToEdit, allTodos }) => {
+const EditForm = ({ currentIdToEdit, allTodos, setShowEditForm }) => {
   const [filterToEditTask] = allTodos.filter(
     ({ id }) => id === currentIdToEdit
   );
-  const { setMessage, setShowSuccessToast } = useContext(GlobalTodosContext);
+  const { setMessage, setShowSuccessToast, fetchTodos } =
+    useContext(GlobalTodosContext);
   const [zodErrors, setZodErrors] = useState(null);
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
   const {
     text,
     priority,
@@ -44,24 +47,32 @@ const EditForm = ({ currentIdToEdit, allTodos }) => {
     description: z.string().max(500).optional(),
     dueDate: z.string().optional(),
   });
-  const handleOnSubmit = e => {
+
+  const updateTodo = async data => {
+    try {
+      await axios.put(`${apiBaseUrl}/todos/${currentIdToEdit}`, data);
+    } catch (error) {
+      console.error(`Error updating todo: ${error.message}`);
+    }
+  };
+  const handleOnSubmit = async e => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
     const parsedData = {};
     for (let [key, value] of formData.entries()) {
-      if (key && value) {
-        parsedData[key] = value;
-      }
+      parsedData[key] = value;
     }
 
     const result = TaskSchema.safeParse(parsedData);
 
     if (result.success) {
-      // await addTodos(parsedData);
+      await updateTodo(parsedData);
       setMessage('Task updated successfully!');
       setShowSuccessToast(true);
+      setShowEditForm(false);
       setZodErrors(null);
+      fetchTodos();
     } else {
       const tree = z.treeifyError(result.error);
       setZodErrors(tree.properties);
@@ -72,14 +83,12 @@ const EditForm = ({ currentIdToEdit, allTodos }) => {
     <form onSubmit={handleOnSubmit} className="edit-form">
       <div className="edit-row">
         <div className="edit-title">
-          <input
-            name="title"
-            className="edit-input title-input"
-            ref={titleRef}
-          />
-          {zodErrors?.title?.errors?.length > 0 && (
-            <p className="error">{zodErrors?.title?.errors[0]}</p>
-          )}
+          <div className="title-input">
+            <input name="title" className="edit-input " ref={titleRef} />
+            {zodErrors?.title?.errors?.length > 0 && (
+              <p className="error">{zodErrors?.title?.errors[0]}</p>
+            )}
+          </div>
 
           <select ref={priorityRef} name="priority" className="edit-select">
             <option value="low">🟢 Low</option>
