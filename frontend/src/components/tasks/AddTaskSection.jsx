@@ -4,14 +4,22 @@ import FormRow from '../form/FormRow';
 import PrioritySelect from '../form/PrioritySelect';
 import axios from 'axios';
 import { z } from 'zod';
-import ErrorToast from '../errors/ErrorToast';
+import ErrorToast from '../toasts/ErrorToast';
 import { useContext } from 'react';
 import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 
 const AddTaskSection = () => {
-  const { isLoading, setIsLoading, setError, fetchTodos, error } =
-    useContext(GlobalTodosContext);
+  const {
+    isLoading,
+    setIsLoading,
+    setError,
+    fetchTodos,
+    error,
+    setMessage,
+    setShowSuccessToast,
+  } = useContext(GlobalTodosContext);
   const [zodErrors, setZodErrors] = useState(null);
+
   const TaskSchema = z.object({
     title: z.string().min(3, 'Title must be at least 3 characters').max(100),
     priority: z.enum(['low', 'medium', 'high']),
@@ -56,6 +64,8 @@ const AddTaskSection = () => {
 
     if (result.success) {
       await addTodos(parsedData);
+      setMessage('Task added successfully!');
+      setShowSuccessToast(true);
       setZodErrors(null);
     } else {
       const tree = z.treeifyError(result.error);

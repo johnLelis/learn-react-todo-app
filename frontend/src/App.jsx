@@ -6,12 +6,15 @@ import AddTaskSection from './components/tasks/AddTaskSection';
 import TaskFilters from './components/tasks/TaskFiltersSection';
 import TaskList from './components/tasks/TaskList';
 import { isToday } from './utils/dateUtils';
+import SuccessToast from './components/toasts/SuccessToast';
 const App = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [allTodos, setAllTodos] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(null);
   const [error, setError] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [message, setMessage] = useState('');
 
   const fetchTodos = useCallback(async () => {
     setIsLoading(true);
@@ -68,12 +71,19 @@ const App = () => {
               activeFilter,
               filteredTodos,
               setAllTodos,
+              setMessage,
+              setShowSuccessToast,
             }}
           >
             <AddTaskSection />
             <TaskFilters />
             <TaskList />
           </GlobalTodosContext.Provider>
+          <SuccessToast
+            visible={showSuccessToast}
+            message={message}
+            onClose={() => setShowSuccessToast(false)}
+          />
         </main>
       </div>
     </>
