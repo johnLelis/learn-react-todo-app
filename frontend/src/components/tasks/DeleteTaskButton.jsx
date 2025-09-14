@@ -4,11 +4,15 @@ import axios from 'axios';
 import { TaskContext } from '../../context/TaskContext';
 const DeleteTaskButton = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  const { setAllTodos, setError } = useContext(GlobalTodosContext);
+  const { setAllTodos, setError, setMessage, setShowSuccessToast } =
+    useContext(GlobalTodosContext);
   const { id } = useContext(TaskContext);
+  const message = 'Task deleted successfully.';
   const handleOnDelete = async id => {
     try {
       await axios.delete(`${baseUrl}/todos/${id}`);
+      setMessage(message);
+      setShowSuccessToast(true);
       setAllTodos(prev => {
         return prev.filter(todo => todo.id !== id);
       });
