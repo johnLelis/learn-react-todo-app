@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const { open } = require('sqlite');
 const cors = require('cors');
 const { body, validationResult } = require('express-validator');
-
+require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
