@@ -1,24 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import axios from 'axios';
 import { GlobalTodosContext } from './context/GlobalTodosContext';
 import AddTaskSection from './components/tasks/AddTaskSection';
 import TaskFilters from './components/tasks/TaskFiltersSection';
-import EmptyTask from './components/tasks/EmptyTask';
 import TaskList from './components/tasks/TaskList';
 
 const App = () => {
-  const API_BASE_URL = 'http://localhost:3001/api';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [allTodos, setAllTodos] = useState([]);
   const [filteredTodos, setFilteredTodos] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/todos?sort=priority`);
+      const response = await axios.get(`${baseUrl}/todos?sort=priority`);
       setAllTodos(response?.data?.data);
       setError(null);
       setActiveFilter('all');
@@ -28,11 +27,11 @@ const App = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [baseUrl]);
 
   useEffect(() => {
     fetchTodos();
-  }, []);
+  }, [fetchTodos]);
 
   return (
     <>
@@ -54,6 +53,7 @@ const App = () => {
               activeFilter,
               setFilteredTodos,
               filteredTodos,
+              setAllTodos,
             }}
           >
             <AddTaskSection />

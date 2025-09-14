@@ -345,8 +345,9 @@ body {
   background: #f8fafc;
 }
 
-.task-item.completed .task-text {
+.task-item.completed .task-title {
   text-decoration: line-through;
+  color: #1e293b;
 }
 
 .task-item.optimistic {

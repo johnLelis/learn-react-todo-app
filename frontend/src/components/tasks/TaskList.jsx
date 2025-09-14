@@ -3,15 +3,44 @@ import { GlobalTodosContext } from '../../context/GlobalTodosContext';
 import { formatDate, getDaysSince } from '../../utils/dateUtils';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import EmptyTask from './EmptyTask';
+import axios from 'axios';
 
 const TaskList = () => {
-  const { activeFilter, allTodos, filteredTodos } =
-    useContext(GlobalTodosContext);
+  const {
+    activeFilter,
+    allTodos,
+    filteredTodos,
+    setError,
+    setAllTodos,
+    setFilteredTodos,
+  } = useContext(GlobalTodosContext);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const priorityCircle = {
     high: '🔴',
     medium: '🟡',
     low: '🟢',
+  };
+
+  const mapTodos = (prev, id) =>
+    prev.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    );
+
+  console.log(activeFilter);
+
+  const handleOnCompleted = async id => {
+    try {
+      await axios.patch(`${baseUrl}/todos/${id}/toggle`);
+      if (activeFilter === 'all') {
+        setAllTodos(prev => mapTodos(prev, id));
+      } else {
+        setFilteredTodos(prev => mapTodos(prev, id));
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error('Error updating todos:', err);
+    }
   };
 
   const displayData = todos => {
@@ -28,10 +57,20 @@ const TaskList = () => {
       }) => {
         const pastDays = getDaysSince(createdAt);
         return (
-          <li key={id} className={`task-item priority-${priority}`}>
+          <li
+            key={id}
+            className={`task-item priority-${priority} ${
+              completed && 'completed'
+            }`}
+          >
             <div className="task-content">
               <div className="task-header">
-                <div className="task-checkbox" role="button" tabIndex="0"></div>
+                <div
+                  className={`task-checkbox ${completed && 'checked'} `}
+                  role="button"
+                  tabIndex="0"
+                  onClick={() => handleOnCompleted(id)}
+                ></div>
                 <div className="task-main">
                   <h3 className="task-title">{text}</h3>
                   <p className="task-description">{description}</p>
@@ -42,7 +81,7 @@ const TaskList = () => {
                     <span className={`priority-badge priority-${priority}`}>
                       {`${priorityCircle[priority]} ${priority} Priority`}
                     </span>
-                    {completed !== 0 && (
+                    {completed && (
                       <span className="meta-item">✅ Completed</span>
                     )}
                     {dueDate && (
@@ -83,61 +122,3 @@ const TaskList = () => {
 };
 
 export default TaskList;
-
-//  <li className="task-item priority-medium completed" data-id="2">
-//         <div className="task-content">
-//           <div className="task-header">
-//             <div
-//               className="task-checkbox checked"
-//               role="button"
-//               tabIndex="0"
-//             ></div>
-//             <div className="task-main">
-//               <h3 className="task-title">
-//                 Set up Modern Development Environment
-//               </h3>
-//               <p className="task-description">
-//                 Configure Vite, ESLint, Prettier, and TypeScript for optimal
-//                 React development experience.
-//               </p>
-//               <div className="task-meta">
-//                 <span className="meta-item">⚙️ Setup</span>
-//                 <span className="priority-badge priority-medium">
-//                   Medium Priority
-//                 </span>
-//                 <span className="meta-item">✅ Completed</span>
-//               </div>
-//             </div>
-//             <div className="task-actions">
-//               <button className="task-btn edit-btn">✏️ Edit</button>
-//               <button className="task-btn delete-btn">🗑️ Delete</button>
-//             </div>
-//           </div>
-//         </div>
-//       </li>
-
-//       <li className="task-item priority-low" data-id="3">
-//         <div className="task-content">
-//           <div className="task-header">
-//             <div className="task-checkbox" role="button" tabIndex="0"></div>
-//             <div className="task-main">
-//               <h3 className="task-title">Implement Optimistic Updates</h3>
-//               <p className="task-description">
-//                 Add useOptimistic hook for better user experience during form
-//                 submissions.
-//               </p>
-//               <div className="task-meta">
-//                 <span className="meta-item">💻 Development</span>
-//                 <span className="priority-badge priority-low">
-//                   Low Priority
-//                 </span>
-//                 <span className="meta-item">📅 Dec 20, 2024</span>
-//               </div>
-//             </div>
-//             <div className="task-actions">
-//               <button className="task-btn edit-btn">✏️ Edit</button>
-//               <button className="task-btn delete-btn">🗑️ Delete</button>
-//             </div>
-//           </div>
-//         </div>
-//       </li>

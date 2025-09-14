@@ -229,7 +229,6 @@ app.get('/api/todos', async (req, res) => {
     query += ' LIMIT ? OFFSET ?';
     params.push(parseInt(limit), parseInt(offset));
 
-    console.log(query);
     const todos = await db.all(query, params);
 
     // Get total count for pagination
