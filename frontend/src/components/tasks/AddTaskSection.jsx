@@ -32,12 +32,12 @@ const AddTaskSection = () => {
     dueDate: z.string().optional(),
   });
 
-  const API_BASE_URL = 'http://localhost:3001/api';
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const addTodos = async data => {
     setIsLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/todos`, data);
+      await axios.post(`${apiBaseUrl}/todos`, data);
       await fetchTodos();
       setError(null);
       handeOnClear();

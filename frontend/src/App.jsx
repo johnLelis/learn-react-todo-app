@@ -7,6 +7,7 @@ import TaskFilters from './components/tasks/TaskFiltersSection';
 import TaskList from './components/tasks/TaskList';
 import { isToday } from './utils/dateUtils';
 import SuccessToast from './components/toasts/SuccessToast';
+import TaskStats from './components/tasks/TaskStats';
 const App = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [allTodos, setAllTodos] = useState([]);
@@ -78,6 +79,7 @@ const App = () => {
             <AddTaskSection />
             <TaskFilters />
             <TaskList />
+            <TaskStats />
           </GlobalTodosContext.Provider>
           <SuccessToast
             visible={showSuccessToast}
